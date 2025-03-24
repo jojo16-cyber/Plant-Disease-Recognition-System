@@ -2,86 +2,70 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 import pandas as pd
-import os
-import google.generativeai as genai
-
-genai.configure(api_key="AIzaSyBdJucnG3ujeokv7OzyPT9pRkuSEzs4PQ0")
-model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 
 # Load Fertilizer and Fungicide Data
-try:
-    fertilizer_df = pd.read_csv("fertilizers.csv")  # Ensure this file is in the same directory
-except FileNotFoundError:
-    st.error("fertilizers.csv file not found. Please make sure it's in the same directory.")
-    fertilizer_df = pd.DataFrame(columns=["Crop Disease", "Fertilizer", "Fungicide / Insecticide", "Estimated Cost -1", "Estimated Cost -2"])
+fertilizer_df = pd.read_csv("fertilizers.csv")  # Ensure this file is in the same directory
 
-# Function to get response from Gemini
-def get_gemini_response(prompt):
-    try:
-        response = model.generate_content(prompt)  # Using the model instance directly
-        return response.text
-    except Exception as e:
-        st.error(f"Error with Gemini API: {str(e)}")
-        return get_fallback_response(prompt)
-
-# Fallback response function when API fails
-def get_fallback_response(prompt):
-    # Extract disease name from prompt
-    disease_name = ""
-    if "plant disease:" in prompt:
-        disease_name = prompt.split("plant disease:")[1].split(".")[0].strip()
-    elif "has identified:" in prompt:
-        disease_name = prompt.split("has identified:")[1].split(".")[0].strip()
-    
-    return f"""
-    # {disease_name} - Disease Information
-
-    ## About the Disease
-    {disease_name} is a plant disease that can affect crop health and yield. Without connectivity to the Gemini API, I'm providing general guidance.
-
-    ## General Recommendations:
-    1. For bacterial diseases: Consider copper-based fungicides
-    2. For fungal diseases: Consider sulfur-based fungicides
-    3. For viral diseases: Focus on prevention through clean tools and removing infected plants
-    
-    ## Preventive Measures:
-    - Practice crop rotation
-    - Maintain proper spacing between plants
-    - Ensure good air circulation
-    - Use drip irrigation instead of overhead watering
-    - Remove and destroy infected plant material
-    
-    ## Consult a Local Extension Office:
-    For specific treatment recommendations, please consult your local agricultural extension office.
-    """
-
-# Tensorflow Model Prediction with error handling
+# Tensorflow Model Prediction
 def model_prediction(test_image):
-    try:
-        model_path = "trained_model.keras"
-        
-        # Check if model exists
-        if not os.path.exists(model_path):
-            st.error(f"Model file {model_path} not found. Using demo mode.")
-            # For demo purposes, return a fixed index
-            return 16  # Peach Bacterial spot
-        
-        model = tf.keras.models.load_model(model_path)
-        image = tf.keras.preprocessing.image.load_img(test_image, target_size=(128,128))
-        input_arr = tf.keras.preprocessing.image.img_to_array(image)
-        input_arr = np.array([input_arr])
-        
-        with st.spinner("Analyzing image..."):
-            prediction = model.predict(input_arr)
-            result_index = np.argmax(prediction)
-            return result_index
-            
-    except Exception as e:
-        st.error(f"Error in model prediction: {str(e)}")
-        # For demo purposes, return a fixed index 
-        return 16  # Peach Bacterial spot
+    model = tf.keras.models.load_model("trained_model.keras")
+    image = tf.keras.preprocessing.image.load_img(test_image , target_size=(128,128))
+    input_arr = tf.keras.preprocessing.image.img_to_array(image) # Converts image to array
+    input_arr = np.array([input_arr])
+    prediction = model.predict(input_arr)
+    result_index = np.argmax(prediction)
+    return result_index
 
-# Main UI
+# Sidebar
+# st.sidebar.title("Dashboard")
+# app_mode = st.sidebar.selectbox("Select Page" , ["Plant Disease Prediction"])
+
+# Home Page
+# if(app_mode == "Home"):
+#     st.header("Plant Disease Recognition System")
+#     image_path = "home_page.jpeg"
+#     st.image(image_path, use_container_width=True)
+#     # Hash in markdown is used for font size
+#     st.markdown("""
+#     Welcome to the Plant Disease Recognition System! 🌿🔍
+    
+#     Our mission is to help in identifying plant diseases efficiently. Upload an image of a plant, and our system will analyze it to detect any signs of diseases. Together, let's protect our crops and ensure a healthier harvest!
+
+#     ### How It Works
+#     1. **Upload Image:** Go to the **Disease Recognition** page and upload an image of a plant with suspected diseases.
+#     2. **Analysis:** Our system will process the image using advanced algorithms to identify potential diseases.
+#     3. **Results:** View the results and recommendations for further action.
+
+#     ### Why Choose Us?
+#     - **Accuracy:** Our system utilizes state-of-the-art machine learning techniques for accurate disease detection.
+#     - **User-Friendly:** Simple and intuitive interface for seamless user experience.
+#     - **Fast and Efficient:** Receive results in seconds, allowing for quick decision-making.
+
+#     ### Get Started
+#     Click on the **Disease Recognition** page in the sidebar to upload an image and experience the power of our Plant Disease Recognition System!
+
+#     ### About Us
+#     Learn more about the project, our team, and our goals on the **About** page.
+#     """)
+
+# About Page
+# elif(app_mode == "About"):
+#     st.header("About")
+#     image_path = "home_page1.jpeg"
+#     st.image(image_path, use_container_width=True)
+#     st.markdown("""
+#                 #### About Dataset
+#                 This dataset is recreated using offline augmentation from the original dataset.The original dataset can be found on this github repo.
+#                 This dataset consists of about 87K rgb images of healthy and diseased crop leaves which is categorized into 38 different classes.The total dataset is divided into 80/20 ratio of training and validation set preserving the directory structure.
+#                 A new directory containing 33 test images is created later for prediction purpose.
+#                 #### Content
+#                 1. Train (70295 images)
+#                 2. Test (33 images)
+#                 3. Valid (17572 images)
+
+#                 """)
+    
+# Prediction Page
 st.header("Plant Disease Recognition System")
 st.markdown(
     """
@@ -93,27 +77,13 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-# Add a notice about demo mode
-if not os.path.exists("trained_model.keras"):
-    st.warning("⚠️ Running in demo mode: The trained model file is missing. Predictions will be simulated.")
-
 test_image = st.file_uploader("Choose an image")
-
-col1, col2 = st.columns(2)
-with col1:
-    show_image = st.button("Show Image")
-with col2:
-    predict_button = st.button("Predict")
-
-if test_image is not None and show_image:
-    st.image(test_image, caption="Uploaded Image")
-
-if test_image is not None and predict_button:
-    with st.spinner("Analyzing image..."):
-        result_index = model_prediction(test_image)
-    
-    # Define class names
+if(st.button("Show Image")):
+    st.image(test_image)
+if(st.button("Predict")):
+    st.write("Our Prediction")
+    result_index = model_prediction(test_image)
+    # Define class
     class_name = ['Apple___Apple_scab',
     'Apple___Black_rot',
     'Apple___Cedar_apple_rust',
@@ -152,10 +122,8 @@ if test_image is not None and predict_button:
     'Tomato___Tomato_Yellow_Leaf_Curl_Virus',
     'Tomato___Tomato_mosaic_virus',
     'Tomato___healthy']
-    
     detected_disease = class_name[result_index]
-    formatted_disease = detected_disease.replace('_', ' ')
-    st.success(f"🌿 Detected Disease: **{formatted_disease}**")
+    st.success(f"🌿 Detected Disease: **{detected_disease.replace('_', ' ')}**")
 
     import difflib
 
@@ -168,7 +136,7 @@ if test_image is not None and predict_button:
     csv_diseases = fertilizer_df["Crop Disease"].tolist()
 
     # Find the best match for detected disease
-    best_match = find_best_match(formatted_disease, csv_diseases)
+    best_match = find_best_match(detected_disease.replace('_', ' '), csv_diseases)
 
     if best_match:
         match = fertilizer_df[fertilizer_df["Crop Disease"] == best_match]
@@ -179,45 +147,9 @@ if test_image is not None and predict_button:
             st.write(f"🔹 **Recommended Fertilizer:** {row['Fertilizer']}")
             st.write(f"🦠 **Recommended Fungicide/Insecticide:** {row['Fungicide / Insecticide']}")
             st.write(f"💰 **Estimated Cost:** {row['Estimated Cost -1']} | {row['Estimated Cost -2']}")
-            
-            # Get enhanced explanation from Gemini
-            prompt = f"""
-            You are a helpful agricultural expert. 
-            Please provide a detailed explanation about the plant disease: {formatted_disease}.
-            Include information about:
-            1. What causes this disease
-            2. How it affects the plant
-            3. How to properly apply the recommended treatment: {row['Fertilizer']} and {row['Fungicide / Insecticide']}
-            4. Preventive measures for future
-            
-            Respond in a friendly, helpful tone as if you're talking to a farmer who needs guidance.
-            Keep the response concise but informative.
-            """
-            
-            with st.spinner("Generating detailed explanation..."):
-                gemini_response = get_gemini_response(prompt)
-                st.subheader("🤖 Expert Explanation")
-                st.write(gemini_response)
+            st.write("---")
     else:
         st.warning("⚠ No specific treatment found in the dataset for this disease.")
-        
-        # Use Gemini to provide information when database doesn't have a match
-        prompt = f"""
-        You are a helpful agricultural expert. 
-        The plant disease detection system has identified: {formatted_disease}.
-        
-        Please provide:
-        1. A detailed explanation of this disease
-        2. Recommended fertilizers and fungicides/insecticides that would be effective
-        3. Approximate costs of these treatments
-        4. Application methods and preventive measures
-        
-        Respond in a friendly, helpful tone as if you're talking to a farmer who needs guidance.
-        Format your response with clear sections and be specific about treatment recommendations.
-        200 words at max
-        """
-        
-        with st.spinner("Searching for treatment information..."):
-            gemini_response = get_gemini_response(prompt)
-            st.subheader("Expert Recommendation")
-            st.write(gemini_response)
+
+
+    
