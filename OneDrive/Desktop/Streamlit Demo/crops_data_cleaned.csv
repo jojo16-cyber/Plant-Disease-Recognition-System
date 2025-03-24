@@ -1,0 +1,34 @@
+Crop,Month,Estimated Cost per Acre (₹),Common Diseases,Water Requirement per Acre (Liters/Season),Estimated Profit per Acre (₹)
+Rice (Paddy),August,14788,Sheath Blight,12 - 15 lakh liters,32352
+Sugarcane,December,30234,Red Rot,15 - 20 lakh liters,62669
+Wheat,July,10250,Blight,5 - 7 lakh liters,27787
+Sugarcane,June,30480,Smut,15 - 20 lakh liters,58706
+Sugarcane,November,29870,Red Rot,15 - 20 lakh liters,62546
+Sugarcane,October,29747,Smut,15 - 20 lakh liters,62378
+Millets,September,8400,Downy Mildew,3 - 5 lakh liters,22000
+Barley,March,7600,Leaf Rust,4 - 6 lakh liters,21000
+Chickpeas,January,9700,Root Rot,5 - 8 lakh liters,24500
+Sunflower,April,12500,Powdery Mildew,7 - 10 lakh liters,33000
+Peanuts,May,8600,Tikka Disease,6 - 9 lakh liters,27000
+Cotton,October,19000,Wilt,10 - 12 lakh liters,45000
+Tomato,February,13500,Early Blight,8 - 12 lakh liters,31000
+Onion,December,9000,Basal Rot,4 - 7 lakh liters,24000
+Carrot,January,7200,Powdery Mildew,3 - 5 lakh liters,18000
+Green Peas,February,8900,Rust,5 - 7 lakh liters,23000
+Maize (Corn),May,9600,Leaf Blight,7 - 10 lakh liters,26500
+Soybean,June,10500,Rust,5 - 7 lakh liters,28500
+Cabbage,October,8500,Black Rot,4 - 6 lakh liters,27000
+Cauliflower,November,8800,Downy Mildew,4 - 6 lakh liters,26000
+Brinjal (Eggplant),August,9200,Phomopsis Blight,5 - 7 lakh liters,25500
+Garlic,March,7700,Basal Rot,4 - 6 lakh liters,20000
+Lettuce,April,7400,Downy Mildew,3 - 5 lakh liters,19000
+Radish,December,6900,White Rust,3 - 5 lakh liters,17500
+Mustard,January,9300,Alternaria Blight,3 - 5 lakh liters,25000
+Pomegranate,September,18500,Bacterial Blight,8 - 10 lakh liters,48000
+Banana,March,28000,Panama Wilt,15 - 18 lakh liters,70000
+Mango,April,32000,Powdery Mildew,10 - 12 lakh liters,75000
+Apple,July,40000,Scab,8 - 12 lakh liters,90000
+Grapes,August,35000,Anthracnose,7 - 10 lakh liters,65000
+Strawberry,February,27500,Gray Mold,6 - 9 lakh liters,60000
+Papaya,October,15000,Ring Spot Virus,8 - 10 lakh liters,40000
+Watermelon,June,13000,Powdery Mildew,7 - 9 lakh liters,35000
